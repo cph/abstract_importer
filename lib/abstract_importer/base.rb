@@ -1,3 +1,4 @@
+require "benchmark"
 require "active_support/core_ext/module/delegation"
 require "abstract_importer/import_options"
 require "abstract_importer/import_plan"
@@ -109,12 +110,12 @@ module AbstractImporter
       {}.tap do |results|
         reporter.start_all(self)
 
-        setup_ms = Benchmark.ms do
+        setup_ms = benchmark do
           setup
         end
         reporter.finish_setup(self, setup_ms)
 
-        ms = Benchmark.ms do
+        ms = benchmark do
           with_transaction do
             collection_importers.each do |importer|
               results[importer.name] = importer.perform!
@@ -122,7 +123,7 @@ module AbstractImporter
           end
         end
 
-        teardown_ms = Benchmark.ms do
+        teardown_ms = benchmark do
           teardown
         end
         reporter.finish_teardown(self, teardown_ms)
@@ -300,6 +301,10 @@ module AbstractImporter
           Reporters::DotReporter.new(io)
         end
       end
+    end
+
+    def benchmark
+      Benchmark.realtime { yield } * 1_000
     end
 
   end
