@@ -6,7 +6,7 @@ SimpleCov.start do
 end
 
 require "minitest/reporters/turn_reporter"
-MiniTest::Reporters.use! Minitest::Reporters::TurnReporter.new
+Minitest::Reporters.use! Minitest::Reporters::TurnReporter.new
 
 require "pry"
 require "rr"
@@ -20,7 +20,7 @@ require "minitest/autorun"
 
 
 
-system "psql -c 'create database abstract_importer_test'"
+system "psql -h localhost -U postgres -c 'create database abstract_importer_test'"
 
 if ENV["DATABASE_URL"]
   ActiveRecord::Base.establish_connection(ENV["DATABASE_URL"])
@@ -28,6 +28,7 @@ else
   ActiveRecord::Base.establish_connection(
     adapter: "postgresql",
     host: "localhost",
+    user: "postgres",
     database: "abstract_importer_test",
     verbosity: "quiet")
 end

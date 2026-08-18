@@ -17,10 +17,11 @@ Gem::Specification.new do |spec|
   spec.test_files    = spec.files.grep(%r{^(test|spec|features)/})
   spec.require_paths = ["lib"]
 
-  spec.add_dependency "activerecord", ">= 6.0"
-  spec.add_dependency "activesupport", ">= 6.0"
+  spec.add_dependency "activerecord", ">= 7.0"
+  spec.add_dependency "activesupport", ">= 7.0"
   spec.add_dependency "progressbar"
-  spec.add_dependency "benchmark"
+  spec.add_dependency "benchmark", ">= 0.4.0"
+  spec.add_dependency "ostruct"
 
   spec.add_development_dependency "bundler"
   spec.add_development_dependency "minitest-reporters"

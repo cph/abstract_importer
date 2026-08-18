@@ -84,7 +84,12 @@ module AbstractImporter
 
       def cast_result(result, table_name)
         types_by_column = result.columns.each_with_object({}) do |column_name, types|
-          types[column_name] = collection.scope.connection.lookup_cast_type_from_column(collection.scope.columns.find { |column| column.name == column_name })
+          connection = collection.scope.connection
+          column = collection.scope.columns.find { |column| column.name == column_name }
+
+          types[column_name] = connection.respond_to?(:lookup_cast_type_from_column) ?
+            connection.lookup_cast_type_from_column(column) :
+            connection.lookup_cast_type(column.sql_type)
         end
 
         result.to_a.map { |row|
