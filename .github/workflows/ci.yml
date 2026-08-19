@@ -7,7 +7,7 @@ jobs:
     runs-on: ubuntu-latest
     services:
       postgres:
-        image: postgres:10.11
+        image: postgres:17
         env:
           POSTGRES_PASSWORD: password
           POSTGRES_DB: abstract_importer_test
@@ -20,7 +20,7 @@ jobs:
       - name: Setup Ruby
         uses: ruby/setup-ruby@v1
         with:
-          ruby-version: 2.6
+          ruby-version: 4.0
           bundler-cache: true
       - name: Run the Tests
         env:
