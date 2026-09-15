@@ -1,3 +1,4 @@
+require 'benchmark'
 require 'abstract_importer/import_options'
 require 'abstract_importer/import_plan'
 require 'abstract_importer/reporters'
@@ -59,16 +60,16 @@ module AbstractImporter
     def perform!
       reporter.start_all(self)
 
-      ms = Benchmark.ms do
+      ms = 1000 * Benchmark.realtime {
         setup
-      end
+      }
       reporter.finish_setup(ms)
 
-      ms = Benchmark.ms do
+      ms = 1000 * Benchmark.realtime {
         with_transaction do
           collections.each &method(:import_collection)
         end
-      end
+      }
 
       teardown
       reporter.finish_all(self, ms)

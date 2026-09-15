@@ -1,5 +1,4 @@
 require "abstract_importer/strategies/base"
-require "activerecord/insert_many"
 
 module AbstractImporter
   module Strategies
@@ -40,7 +39,7 @@ module AbstractImporter
 
         begin
           tries = (tries || 0) + 1
-          collection.scope.insert_many(@batch)
+          insert_batch(@batch)
         rescue
           raise if tries > 1
           invoke_callback(:rescue_batch, @batch)
@@ -53,6 +52,23 @@ module AbstractImporter
         summary.created += ids.length
 
         @batch = []
+      end
+
+
+      # Rails' insert_all replaces the activerecord-insert_many gem, whose
+      # reliance on adapter internals (lookup_cast_type_from_column) does not
+      # survive Rails 8.1. insert_all cannot be called on a has_many :through
+      # scope, so fall back to the model in that case; and it raises on an
+      # empty batch where insert_many returned [].
+      def insert_batch(batch)
+        return if batch.empty?
+
+        scope = collection.scope
+        if scope.respond_to?(:proxy_association) && scope.proxy_association.reflection.through_reflection?
+          scope = scope.klass
+        end
+
+        scope.insert_all(batch)
       end
 
 

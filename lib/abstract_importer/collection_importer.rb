@@ -1,3 +1,4 @@
+require 'benchmark'
 require "abstract_importer/strategies"
 
 module AbstractImporter
@@ -35,11 +36,11 @@ module AbstractImporter
       prepare!
 
       invoke_callback(:before_all)
-      summary.ms = Benchmark.ms do
+      summary.ms = 1000 * Benchmark.realtime {
         each_new_record do |attributes|
           strategy.process_record(attributes)
         end
-      end
+      }
       strategy.flush
       invoke_callback(:after_all)
 
